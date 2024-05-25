@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Document</title>
+
+
+  <?!= include('CSS'); ?>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1 txt="center">Solicitud de compra</h1>
+    <form method="post" action="<?= pubUrl ?>" id="formCompra" name="formCompra">
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="inputEmail4">Soliciante *</label>
+          <input type="text" class="form-control" id="idSolicitante" name="solicitante" placeholder="Solicitante" autocomplete="off">
+        </div>
+        <div class="form-group col-md-6">
+          <label for="inputPassword4">Email *</label>
+          <input type="email" class="form-control" id="idEmail" name="email" placeholder="Email" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label for="inputState">Centro de costo *</label>
+          <select id="inputState" class="form-control" name="centroCosto">
+                      <option selected>Seleccione</option>
+                      <option>Admin General - 001</option>
+                      <option>Anglo American Quellaveco - 058</option>
+                      <option>Atención al Cliente - 055</option>
+                      <option>Callao - 003</option>
+                      <option>Matarani Cerro Verde - 016</option>
+                      <option>Control RFX - 049</option>
+                      <option>Control RFX Matarani - 053</option>
+                      <option>Gerencia Commercial - 012</option>
+                      <option>Gerencia de Proyecto - 043</option>
+                      <option>Gerencia GAF - 010</option>
+                      <option>Gerencia RRHH - 041</option>
+                      <option>Gerente C.RFX - 050</option>
+                      <option>Gerente C.RFX Matarani- 053</option>
+                      <option>Gerencia de Relaciones Comerciales - 042</option>
+                      <option>Gerente GAF - 019</option>
+                    </select>
+        </div>
+
+        <div class="form-group col-md-4">
+          <label for="inputState">Razón para la compra *</label>
+          <select id="inputState" class="form-control" name="razonCompra">
+                      <option selected>Comercial</option>
+                      <option>Operacional</option>
+                      <option>SSOMA</option>
+                      <option>ADMINISTRATIVA</option>
+                    </select>
+        </div>
+
+        <div class="form-group col-md-4">
+          <label for="inputState">Prioridad *</label>
+          <select id="inputState" class="form-control" name="prioridad">
+                    <option selected>Alta</option>
+                    <option>Media</option>
+                    <option>Baja</option>
+                  </select>
+        </div>
+      </div>
+
+      <br>
+      <hr>
+      <div class="container">
+        <h5>Producto</h5>
+        <hr>
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="productName">Nombre *</label>
+            <input type="text" class="form-control" id="productName" name="productName" placeholder="Nombre del producto" autocomplete="off">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="productBrand">Marca *</label>
+            <input type="text" class="form-control" id="productBrand" name="productBrand" placeholder="Marca del producto"
+                          autocomplete="off"
+                        >
+          </div>
+          <div class="form-group col-md-2">
+            <label for="productQuantity">Cantidad *</label>
+            <input type="number" class="form-control" id="productQuantity" name="productQuantity" placeholder="Cantidad de unidades">
+          </div>
+          <div class="form-group col-md-2">
+            <label for="productPrice">Precio(dólares) *</label>
+            <input type="number" class="form-control" id="productPrice" name="productPrice" placeholder="Precio por unidad en dólares">
+          </div>
+        </div>
+        <div class="form-floating">
+          <label for="productSpecs">Especificaciones</label>
+          <textarea class="form-control col-md-6" placeholder="Especificaciones técnicas del dispositivo" id="productSpec" name="productSpec" style="height: 100px"></textarea>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="addProductBtn">Añadir Producto</button>
+      </div>
+
+      <!-- Tabla para mostrar los productos -->
+      <table class="table mt-4">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Marca</th>
+            <th>Especificaciones</th>
+            <th>Cantidad</th>
+            <th>Precio (USD)</th>
+          </tr>
+        </thead>
+        <tbody id="productTableBody">
+          <!-- Aquí se agregará dinámicamente la información de los productos -->
+
+          <!-- Se creaN inputs ocultos para recibir los productos guardados y luego enviarse cuando se haga el submit -->
+          <input type="hidden" id="productNames" name="productNames[]">
+          <input type="hidden" id="productBrands" name="productBrands[]">
+          <input type="hidden" id="productQuantities" name="productQuantities[]">
+          <input type="hidden" id="productPrices" name="productPrices[]">
+          <input type="hidden" id="productSpecs" name="productSpecs[]">
+          <!-- Textarea oculto para almacenar las especificaciones -->
+          <!--<textarea style="display: none;" id="productSpecs" name="productSpecs[]"></textarea> -->
+
+        </tbody>
+      </table>
+  </div>
+
+  <!-- Script personalizado -->
+  <script src="logica.js"></script>
+
+  <div class="col text-center">
+    <button class="btn btn-success" type="submit"> Enviar </button>
+  </div>
+  </form>
+  </div>
+
+  <!-- Llamar al archivo JS -->
+  <?!= include('JS'); ?>
+</body>
+
+</html>

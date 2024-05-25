@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <base target="_top">
+  <style>
+    /* Incluyendo el CSS de Bootstrap directamente */
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        .card {
+            margin-top: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.125);
+            border-radius: 0.25rem;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-body {
+            padding: 1.25rem;
+        }
+
+        .card-title {
+            margin-bottom: 0.75rem;
+            font-size: 1.5rem;
+        }
+
+        .card-text {
+            margin-bottom: 1.25rem;
+        }
+
+        .list-group {
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+
+        .list-group-item {
+            position: relative;
+            display: block;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: -1px;
+            background-color: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.125);
+        }
+
+        .table {
+            width: 100%;
+            margin-bottom: 1rem;
+            background-color: transparent;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            vertical-align: top;
+            border-top: 1px solid rgba(0, 0, 0, 0.125);
+        }
+
+        .table-bordered {
+            border: 1px solid rgba(0, 0, 0, 0.125);
+        }
+
+        .table-bordered th,
+        .table-bordered td {
+            border: 1px solid rgba(0, 0, 0, 0.125);
+        }
+
+        .table-responsive {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            -ms-overflow-style: -ms-autohiding-scrollbar;
+        }
+
+        .card-footer {
+            padding: 0.75rem 1.25rem;
+            background-color: #f7f7f9;
+            border-top: 1px solid rgba(0, 0, 0, 0.125);
+        }
+
+        .btn {
+            display: inline-block;
+            font-weight: 400;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            user-select: none;
+            border: 1px solid transparent;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 0.25rem;
+            transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        .btn-primary {
+            color: #fff;
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-secondary {
+            color: #fff;
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .btn-success {
+            color: #fff;
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .btn-danger {
+            color: #fff;
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .btn-warning {
+            color: #212529;
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+
+        .btn-info {
+            color: #fff;
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card mt-4">
+            <div class="card-body">
+                <h4 class="card-title text-center">Solicitud de Compra N°<span><?= solicitudId; ?></span></h4>
+                <p class="card-text">Se solicita equipo para el área de Logística debido al ingreso de nuevo personal.</p>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><span class="font-weight-bold"><b>Solictante:</b></span> <?= emisor; ?></li>
+                <li class="list-group-item"><span class="font-weight-bold"><b>Área:</b></span> Área de ejemplo</li>
+                <li class="list-group-item"><span class="font-weight-bold"><b>Razón de compra:</b></span><?= razonDeCompra; ?></li>
+                <li class="list-group-item">
+                    <div class="row">
+                        <div class="col-sm-6"><span class="font-weight-bold"><b>Centro de Costo:</b></span><?= centroDeCosto; ?> </div>
+                        <div class="col-sm-6"><span class="font-weight-bold"><b>Fecha:</b></span><?= fechaSolicitud; ?>  </div>
+                    </div>
+                </li>
+            </ul>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Producto</th>
+                            <th scope="col">Marca</th>
+                            <th scope="col">Especificaciones</th>
+                            <th scope="col">Cantidad</th>
+                            <th scope="col">Precio</th>
+                            <th scope="col">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <? var total = 0; ?>
+                        <? for (var i = 1; i < tablaSolicitud.length; i++) { ?>
+                        <tr>
+                            <th scope="row"><?= i; ?></th>
+                            <? for (var j = 7; j < (tablaSolicitud[i].length-8); j++) { ?>
+                            <td><?= tablaSolicitud[i][j]; ?></td>
+                            <? } ?>
+                        </tr>
+                        <? } ?>
+                    </tbody>
+                    <? if (totalCompra) { ?>
+                    <tfoot>
+                        <tr class="total-row">
+                            <td colspan="6" class="text-right font-weight-bold">Total de la Compra:</td>
+                            <td><?= totalCompra; ?></td>
+                        </tr>
+                    </tfoot>
+                    <? } ?>
+                </table>
+            </div>
+            <div class="card-footer text-center">
+                <? if (!esAprobacion) { ?>
+                <p>Seleccione una opción para esta solicitud:</p>
+                <a href="https://script.google.com/a/macros/ahkgroup.com/s/AKfycby-Dodddv4sFV4eOrBSELXKNXoah9lkY8q_LxRO2kCu/dev?solicitudId=<?= solicitudId ?>&estado=Aprobado&aprobadorEmail=<?= aprobadorEmail ?>" class="btn btn-success">Aprobar</a>
+                <a href="https://script.google.com/a/macros/ahkgroup.com/s/AKfycby-Dodddv4sFV4eOrBSELXKNXoah9lkY8q_LxRO2kCu/dev?solicitudId=<?= solicitudId ?>&estado=Observado&aprobadorEmail=<?= aprobadorEmail ?>" class="btn btn-warning">Observar</a>
+                <a href="https://script.google.com/a/macros/ahkgroup.com/s/AKfycby-Dodddv4sFV4eOrBSELXKNXoah9lkY8q_LxRO2kCu/dev?solicitudId=<?= solicitudId ?>&estado=Desaprobado&aprobadorEmail=<?= aprobadorEmail ?>" class="btn btn-danger">Desaprobar</a>
+                <? } ?>
+                <? if (esAprobacion) { ?>
+                <p class="mt-3">Aprobado por: <?= aprobadorEmail; ?></p>
+                <? } ?>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

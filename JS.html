@@ -1,0 +1,59 @@
+<!-- Bootstrap JS y cualquier otro script personalizado -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+<script>
+  $(document).ready(function() {
+    // Manejar el evento de clic en el botón "Añadir Producto"
+    $('#addProductBtn').click(function() {
+      // Obtener los valores de los campos del formulario
+      var productName = $('#productName').val();
+      var productBrand = $('#productBrand').val();
+      var productQuantity = $('#productQuantity').val();
+      var productPrice = $('#productPrice').val();
+      var productSpec = $('#productSpec').val();
+  
+      // Verificar si todos los campos están rellenos
+      if (productName.trim() === '' || productBrand.trim() === '' || productQuantity.trim() === '' || productPrice.trim() === '' || productSpec.trim() === '') {
+        // Si algún campo está vacío, mostrar un mensaje de error y salir de la función
+        alert('Por favor, complete todos los campos para agregar un producto.');
+        return;
+      }
+  
+      // Crear una nueva fila de tabla con los valores del producto
+      var newRow = '<tr><td>' + productName + '</td><td>' + productBrand + '</td><td>' + productSpec+ '</td><td>' + productQuantity + '</td><td>' + productPrice+ '</td></tr>';
+  
+      // Agregar la nueva fila a la tabla 
+      $('#productTableBody').append(newRow);
+
+      // Actualizar campos ocultos con los datos de la tabla
+      $('#productNames').val(function(i, oldVal) {
+        return oldVal ? oldVal + ',' + productName : productName;
+      });
+      $('#productBrands').val(function(i, oldVal) {
+        return oldVal ? oldVal + ',' + productBrand : productBrand;
+      });
+      $('#productQuantities').val(function(i, oldVal) {
+        return oldVal ? oldVal + ',' + productQuantity : productQuantity;
+      });
+      $('#productPrices').val(function(i, oldVal) {
+        return oldVal ? oldVal + ',' + productPrice : productPrice;
+      });
+      // Actualizar textarea oculto con los datos de las especificaciones
+      $('#productSpecs').val(function(i, oldVal) {
+        
+        return oldVal ? oldVal + '\n' + productSpec : productSpec+',';
+      });
+
+  
+      // Limpiar los campos del formulario
+      $('#productName').val('');
+      $('#productBrand').val('');
+      $('#productQuantity').val('');
+      $('#productPrice').val('');
+      $('#productSpec').val('');
+    });
+  });
+</script>

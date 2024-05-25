@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+  <?!= include('cssTablaEmail'); ?>
+</head>
+
+<body>
+  <h1>Solicitud de Compra</h1>
+
+  <div class="table-container">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <? for (var i = 0; i < tablaSolicitud[0].length; i++) { ?>
+          <th scope="col">
+            <?= tablaSolicitud[0][i] ?>
+          </th>
+          <? } ?>
+        </tr>
+      </thead>
+
+      <tbody>
+        <? for (var i = 1; i < tablaSolicitud.length; i++) { ?>
+        <tr scope="row">
+          <? for (var j = 0; j < tablaSolicitud[0].length; j++) { ?>
+          <td>
+            <?= tablaSolicitud[i][j] ?>
+          </td>
+          <? } ?>
+        </tr>
+        <? } ?>
+      </tbody>
+
+      <tfoot>
+        <? if (totalCompra){?>
+        <tr class="total-row">
+          <td colspan="<?= tablaSolicitud[0].length - 1 ?>" class="total-label">Total de la Compra:</td>
+          <td>
+            <?= totalCompra ?>
+          </td>
+        </tr>
+        <?}?>
+        <? if (aprobadorEmail){?>
+        <tr class="total-row">
+          <td colspan="<?= tablaSolicitud[0].length - 1 ?>" class="total-label">Aprobado por:</td>
+          <td>
+            <?= aprobadorEmail ?>
+          </td>
+        </tr>
+        <?}?>
+      </tfoot>
+    </table>
+  </div>
+  <div>
+    <p>Seleccione una opción para esta solicitud:</p>
+    <a
+      href="https://script.google.com/a/macros/ahkgroup.com/s/AKfycby-Dodddv4sFV4eOrBSELXKNXoah9lkY8q_LxRO2kCu/dev?solicitudId=<?= solicitudId ?>&estado=Aprobado&aprobadorEmail=<?= aprobadorEmail ?>">Aprobar</a>
+    |
+    <a
+      href="https://script.google.com/a/macros/ahkgroup.com/s/AKfycby-Dodddv4sFV4eOrBSELXKNXoah9lkY8q_LxRO2kCu/dev?solicitudId=<?= solicitudId ?>&estado=Observado&aprobadorEmail=<?= aprobadorEmail ?>">Observar</a>
+    |
+    <a
+      href="https://script.google.com/a/macros/ahkgroup.com/s/AKfycby-Dodddv4sFV4eOrBSELXKNXoah9lkY8q_LxRO2kCu/dev?solicitudId=<?= solicitudId ?>&estado=Desaprobado&aprobadorEmail=<?= aprobadorEmail ?>">Desaprobar</a>
+  </div>
+</body>
+
+</html>
