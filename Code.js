@@ -259,8 +259,7 @@ function enviarCorreoCompras(registrosAprobados, aprobadorEmail) {
   htmlTemplate.tablaSolicitud = registrosAprobados;
   htmlTemplate.aprobadorEmail = aprobadorEmail;
   htmlTemplate.esAprobacion = true;
-
-  // Calcula el total de la compra
+// Calcula el total de la compra
   var totalCompra = 0;
   for (var i = 0; i < registrosAprobados.length; i++) {
     totalCompra += parseFloat(registrosAprobados[i][12]); // Suponiendo que el subtotal está en la columna 11

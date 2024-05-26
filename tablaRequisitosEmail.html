@@ -125,7 +125,7 @@
             border-color: #ffc107;
         }
 
-        .btn-info {
+        .bt-info {
             color: #fff;
             background-color: #17a2b8;
             border-color: #17a2b8;
@@ -186,13 +186,13 @@
                 </table>
             </div>
             <div class="card-footer text-center">
-                <? if (!esAprobacion) { ?>
+                <? if (paraAprobar) { ?>
                 <p>Seleccione una opción para esta solicitud:</p>
                 <a href="https://script.google.com/a/macros/ahkgroup.com/s/AKfycby-Dodddv4sFV4eOrBSELXKNXoah9lkY8q_LxRO2kCu/dev?solicitudId=<?= solicitudId ?>&estado=Aprobado&aprobadorEmail=<?= aprobadorEmail ?>" class="btn btn-success">Aprobar</a>
                 <a href="https://script.google.com/a/macros/ahkgroup.com/s/AKfycby-Dodddv4sFV4eOrBSELXKNXoah9lkY8q_LxRO2kCu/dev?solicitudId=<?= solicitudId ?>&estado=Observado&aprobadorEmail=<?= aprobadorEmail ?>" class="btn btn-warning">Observar</a>
                 <a href="https://script.google.com/a/macros/ahkgroup.com/s/AKfycby-Dodddv4sFV4eOrBSELXKNXoah9lkY8q_LxRO2kCu/dev?solicitudId=<?= solicitudId ?>&estado=Desaprobado&aprobadorEmail=<?= aprobadorEmail ?>" class="btn btn-danger">Desaprobar</a>
                 <? } ?>
-                <? if (esAprobacion) { ?>
+                <? if (!paraAprobar) { ?>
                 <p class="mt-3">Aprobado por: <?= aprobadorEmail; ?></p>
                 <? } ?>
             </div>
