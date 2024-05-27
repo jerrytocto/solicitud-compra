@@ -142,7 +142,9 @@
             </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item"><span class="font-weight-bold"><b>Solictante:</b></span> <?= emisor; ?></li>
-                <li class="list-group-item"><span class="font-weight-bold"><b>Área:</b></span> Área de ejemplo</li>
+                <? if(aprobadoresEmail && mostrarCampoAprobador==1){?>
+                <li class="list-group-item"><span class="font-weight-bold"><b>Aprobado Por:</b></span> <?= aprobadoresEmail; ?> </li>
+                <?}?>
                 <li class="list-group-item"><span class="font-weight-bold"><b>Razón de compra:</b></span><?= razonDeCompra; ?></li>
                 <li class="list-group-item">
                     <div class="row">
@@ -166,10 +168,10 @@
                     </thead>
                     <tbody>
                         <? var total = 0; ?>
-                        <? for (var i = 1; i < tablaSolicitud.length; i++) { ?>
+                        <? for (var i = 0; i < tablaSolicitud.length; i++) { ?>
                         <tr>
-                            <th scope="row"><?= i; ?></th>
-                            <? for (var j = 7; j < (tablaSolicitud[i].length-8); j++) { ?>
+                            <th scope="row"><?= (i+1); ?></th>
+                            <? for (var j = 7; j < (tablaSolicitud[i].length-6); j++) { ?>
                             <td><?= tablaSolicitud[i][j]; ?></td>
                             <? } ?>
                         </tr>
@@ -188,12 +190,9 @@
             <div class="card-footer text-center">
                 <? if (paraAprobar) { ?>
                 <p>Seleccione una opción para esta solicitud:</p>
-                <a href="https://script.google.com/a/macros/ahkgroup.com/s/AKfycby-Dodddv4sFV4eOrBSELXKNXoah9lkY8q_LxRO2kCu/dev?solicitudId=<?= solicitudId ?>&estado=Aprobado&aprobadorEmail=<?= aprobadorEmail ?>" class="btn btn-success">Aprobar</a>
-                <a href="https://script.google.com/a/macros/ahkgroup.com/s/AKfycby-Dodddv4sFV4eOrBSELXKNXoah9lkY8q_LxRO2kCu/dev?solicitudId=<?= solicitudId ?>&estado=Observado&aprobadorEmail=<?= aprobadorEmail ?>" class="btn btn-warning">Observar</a>
-                <a href="https://script.google.com/a/macros/ahkgroup.com/s/AKfycby-Dodddv4sFV4eOrBSELXKNXoah9lkY8q_LxRO2kCu/dev?solicitudId=<?= solicitudId ?>&estado=Desaprobado&aprobadorEmail=<?= aprobadorEmail ?>" class="btn btn-danger">Desaprobar</a>
-                <? } ?>
-                <? if (!paraAprobar) { ?>
-                <p class="mt-3">Aprobado por: <?= aprobadorEmail; ?></p>
+                <a href="https://script.google.com/a/macros/ahkgroup.com/s/AKfycby-Dodddv4sFV4eOrBSELXKNXoah9lkY8q_LxRO2kCu/dev?solicitudId=<?= solicitudId ?>&estado=Aprobado&aprobadoresEmail=<?= encodeURIComponent(aprobadoresEmail) ?>" class="btn btn-success">Aprobar</a>
+                <a href="https://script.google.com/a/macros/ahkgroup.com/s/AKfycby-Dodddv4sFV4eOrBSELXKNXoah9lkY8q_LxRO2kCu/dev?solicitudId=<?= solicitudId ?>&estado=Observado&aprobadoresEmail=<?= encodeURIComponent(aprobadoresEmail) ?>" class="btn btn-warning">Observar</a>
+                <a href="https://script.google.com/a/macros/ahkgroup.com/s/AKfycby-Dodddv4sFV4eOrBSELXKNXoah9lkY8q_LxRO2kCu/dev?solicitudId=<?= solicitudId ?>&estado=Desaprobado&aprobadoresEmail=<?= encodeURIComponent(aprobadoresEmail) ?>" class="btn btn-danger">Desaprobar</a>
                 <? } ?>
             </div>
         </div>

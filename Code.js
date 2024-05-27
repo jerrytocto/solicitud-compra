@@ -1,8 +1,12 @@
 // Manejo de solicitudes de GET
 function doGet(e) {
+  console.log("ID : " + e.parameter.solicitudId);
+  console.log("ESTADO : " + e.parameter.estado);
+  console.log("APROBADOR : " + e.parameter.aprobadoresEmail);
   if (
-    (e.parameter.solicitudId && e.parameter.estado, e.parameter.aprobadorEmail)
+    (e.parameter.solicitudId && e.parameter.estado, e.parameter.aprobadoresEmail)
   ) {
+
     return handleEstadoRequest(e);
   }
   var template = HtmlService.createTemplateFromFile("index");
@@ -50,7 +54,8 @@ function registrarProductos(e, solicitudId, sheetRegistro) {
     var subtotal = calcularSubtotal(producto.cantidad, producto.precio);
     totalCompra += subtotal;
   });
-
+  
+  console.log("Total de compra: "+ totalCompra)
   productos.forEach((producto) => {
     var subtotal = calcularSubtotal(producto.cantidad, producto.precio);
 
@@ -111,37 +116,46 @@ function calcularSubtotal(cantidad, precio) {
 function handleEstadoRequest(e) {
   var solicitudId = parseInt(e.parameter.solicitudId, 10);
   var estado = e.parameter.estado;
-  var aprobadorEmail = e.parameter.aprobadorEmail;
+  var aprobadoresEmail = e.parameter.aprobadoresEmail;
 
-  if (!solicitudId || !estado || !aprobadorEmail) {
+  if (!solicitudId || !estado || !aprobadoresEmail) {
     return ContentService.createTextOutput(
       "Solicitud ID o estado faltante o aprobadorEmail."
     );
   }
 
-  var resultado = actualizarEstado(solicitudId, estado, aprobadorEmail);
+  var resultado = actualizarEstado(solicitudId, estado, aprobadoresEmail);
   return ContentService.createTextOutput(resultado);
 }
 
 // Actualiza el estado de la solicitud
-function actualizarEstado(solicitudId, estado, aprobadorEmail) {
+function actualizarEstado(solicitudId, estado, aprobadoresEmail) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName("index");
   var data = sheet.getDataRange().getValues();
   var totalCompra = costoTotalSolicitud(solicitudId);
   var solicitanteEmail = null;
+  var arrayAprobadoresEmail = [];
+
+     //Convertimos el string en un array
+  if (typeof aprobadoresEmail === 'string') {
+    arrayAprobadoresEmail = aprobadoresEmail.split(',');
+  }
 
   var columnaEstado = determinarColumnaEstado(
     totalCompra,
-    solicitudId,
-    aprobadorEmail
+    arrayAprobadoresEmail
   );
+  
+  console.log("ID de solicitud: "+ solicitudId);
+  console.log("Columnas de estado(actualizarEstado): "+ columnaEstado);
   var registrosActualizados = [];
 
   data.forEach((row, i) => {
     if (row[0] == solicitudId) {
+      console.log("Fila: "+ row[0]);
       sheet.getRange(i + 1, columnaEstado).setValue(estado);
-      sheet.getRange(i + 1, columnaEstado + 1).setValue(aprobadorEmail);
+      sheet.getRange(i + 1, columnaEstado + 1).setValue(arrayAprobadoresEmail.length===1 ? arrayAprobadoresEmail[0]:arrayAprobadoresEmail[1]);
       sheet.getRange(i + 1, columnaEstado + 2).setValue(new Date());
       registrosActualizados.push(row);
       solicitanteEmail = row[2];
@@ -150,10 +164,11 @@ function actualizarEstado(solicitudId, estado, aprobadorEmail) {
 
   if (registrosActualizados.length > 0) {
     if (solicitanteEmail) {
+      // Enviar correo para notificación al emisor del correo
       enviarCorreoRemitente(solicitanteEmail, solicitudId, estado);
     }
     if (estado === "Aprobado") {
-      enviarCorreoAprobado(registrosActualizados, totalCompra, aprobadorEmail,columnaEstado);
+      enviarCorreoAprobado(registrosActualizados, totalCompra, aprobadoresEmail, columnaEstado);
     }
     return `El estado de la solicitud ha sido actualizado a: ${estado}`;
   } else {
@@ -162,14 +177,21 @@ function actualizarEstado(solicitudId, estado, aprobadorEmail) {
 }
 
 // Determina la columna de estado a actualizar según el total de la compra
-function determinarColumnaEstado(totalCompra, solicitudId, aprobadorEmail) {
+function determinarColumnaEstado(totalCompra, arrayAprobadoresEmail) {
+
+  console.log("Aprobadores (determinarColumnaEstado): "+arrayAprobadoresEmail);
+  console.log("Array aprobadores: "+ arrayAprobadoresEmail.length);
+
   if (totalCompra <= 500) {
     return 14; // Columna para jefe del área
   } else {
-    if (aprobadorEmail === "jesus.arias@ahkgroup.com") {
+    //Este correo debe ser el mismo que se encuentra en la función enviar email para cuando el monto es > 500, Lïnea 324
+    if (arrayAprobadoresEmail.length==1) { 
+      console.log("Aprobado por el gerente de área");
       return 14; // Columna del estado para el gerente de área
-    } else if (aprobadorEmail === "gerente.general@ahkgroup.com") {
-      return 17; // Columna del estado para el gerente general
+    } else if (arrayAprobadoresEmail.length==2) {
+      console.log("Aprobado por el gerente general");
+      return 17; // Columna del estado para el gerente general  
     }
   }
 }
@@ -191,28 +213,36 @@ function costoTotalSolicitud(solicitudId) {
 }
 
 // Enviar correo electrónico de aprobación
-function enviarCorreoAprobado(registros, totalCompra, aprobadorEmail,columnaEstado) {
+function enviarCorreoAprobado(registros, totalCompra, aprobadoresEmail, columnaEstado) {
   var destinatario;
 
+  var arrayAprobadoresEmail = [];
+
+  //Convertimos el string en un array
+  if (typeof aprobadoresEmail === 'string') {
+    arrayAprobadoresEmail = aprobadoresEmail.split(',');
+  }
+
   if (totalCompra <= 500) {
-    destinatario = "jerry.chuquiguanca@ahkgroup.com"; //Correo del área de compras
-    enviarCorreoCompras(registros, aprobadorEmail, destinatario, totalCompra);
+    destinatario = "jesus.arias@ahkgroup.com"; //Correo del área de compras
+    enviarCorreoCompras(registros, aprobadoresEmail, destinatario, totalCompra);
   } else {
     //Verificar la columna de estaddo que se ha modificado
-    if(columnaEstado == 14){
-      destinatario = "gerente.general@ahkgroup.com";
+    if (arrayAprobadoresEmail.length==1) {
+      destinatario = "jerry.chuquiguanca@ahkgroup.com"; //Correo del gerente general
+      aprobadoresEmail += `,${destinatario}`;
       enviarCorreoGerenteGeneral(
         registros,
-        aprobadorEmail,
+        aprobadoresEmail,
         destinatario,
         totalCompra
       );
 
       //Correo ha sido revisado por el gerente general
-    } else if(columnaEstado == 17){
-        //Luego de la aprobación del gerente general se envía el correo al área de compras
-        destinatario = "jerry.chuquiguanca@ahkgroup.com"; //Correo del área de compras
-        enviarCorreoCompras(registros, aprobadorEmail, destinatario, totalCompra);
+    } else if (arrayAprobadoresEmail.length==2) {
+      //Luego de la aprobación del gerente general se envía el correo al área de compras
+      destinatario = "jesus.arias@ahkgroup.com"; //Correo del área de compras
+      enviarCorreoCompras(registros, aprobadoresEmail, destinatario, totalCompra);
     }
   }
 }
@@ -220,7 +250,7 @@ function enviarCorreoAprobado(registros, totalCompra, aprobadorEmail,columnaEsta
 // Enviar correo al gerente general
 function enviarCorreoGerenteGeneral(
   registrosAprobados,
-  aprobadorEmail,
+  aprobadoresEmail,
   destinatario,
   totalCompra
 ) {
@@ -232,7 +262,10 @@ function enviarCorreoGerenteGeneral(
   htmlTemplate.fechaSolicitud = registrosAprobados[0][4];
   htmlTemplate.centroDeCosto = registrosAprobados[0][6];
   htmlTemplate.tablaSolicitud = registrosAprobados;
-  htmlTemplate.aprobadorEmail = aprobadorEmail;
+
+  htmlTemplate.aprobadoresEmail = aprobadoresEmail;
+
+  htmlTemplate.mostrarCampoAprobador = 1;
   htmlTemplate.paraAprobar = true;
 
   //Verificación si la compra es mayor a 1000 generar el capex y añadirlo al correo
@@ -264,7 +297,7 @@ function enviarCorreoRemitente(email, solicitudId, estado) {
 // Enviar correo al área de compras
 function enviarCorreoCompras(
   registrosAprobados,
-  aprobadorEmail,
+  aprobadoresEmail,
   destinatario,
   totalCompra
 ) {
@@ -276,11 +309,12 @@ function enviarCorreoCompras(
   htmlTemplate.fechaSolicitud = registrosAprobados[0][4];
   htmlTemplate.centroDeCosto = registrosAprobados[0][6];
   htmlTemplate.tablaSolicitud = registrosAprobados;
-  htmlTemplate.aprobadorEmail = aprobadorEmail;
+  htmlTemplate.aprobadoresEmail = aprobadoresEmail;
+  htmlTemplate.mostrarCampoAprobador = 1;
   htmlTemplate.paraAprobar = false;
 
-    //AQUÍ ESTÁ PENDIENTE QUE SE DEBE PASAR TAMBIÉN EL CORREO DEL GERENTE DE ÁREA
-    
+  //AQUÍ ESTÁ PENDIENTE QUE SE DEBE PASAR TAMBIÉN EL CORREO DEL GERENTE DE ÁREA
+
   htmlTemplate.totalCompra = totalCompra.toFixed(2);
 
   var html = htmlTemplate.evaluate().getContent();
@@ -296,24 +330,30 @@ function enviarCorreoCompras(
 // Función para enviar email para su aprobación
 function enviarEmail(totalCompra, solicitudId) {
   var filteredData = obtenerUltimosRegistros(solicitudId);
+  console.log("Datos todos: " + filteredData)
 
   var htmlTemplate = HtmlService.createTemplateFromFile("tablaRequisitosEmail");
   htmlTemplate.tablaSolicitud = filteredData;
   htmlTemplate.totalCompra = totalCompra ? totalCompra.toFixed(2) : "0.00";
   htmlTemplate.solicitudId = solicitudId;
-  htmlTemplate.emisor = filteredData[1][1];
-  htmlTemplate.razonDeCompra = filteredData[1][3];
-  htmlTemplate.fechaSolicitud = filteredData[1][4];
-  htmlTemplate.centroDeCosto = filteredData[1][6];
-  htmlTemplate.aprobadorEmail = null;
+  htmlTemplate.emisor = filteredData[0][1];
+  htmlTemplate.razonDeCompra = filteredData[0][3];
+  htmlTemplate.fechaSolicitud = filteredData[0][4];
+  htmlTemplate.centroDeCosto = filteredData[0][6];
+  htmlTemplate.mostrarCampoAprobador = 0;
   htmlTemplate.paraAprobar = true;
-
-  var html = htmlTemplate.evaluate().getContent();
 
   var destinatario =
     totalCompra <= 500
       ? "jerry.chuquiguanca@ahkgroup.com" //Correo del jefe del área
-      : "jesus.arias@ahkgroup.com"; //Correo del gerente de área
+      : "jerry.chuquiguanca@ahkgroup.com"; //Correo del gerente de área
+  
+  var aprobadoresEmail = destinatario;
+  
+  htmlTemplate.aprobadoresEmail = aprobadoresEmail;
+  console.log("Enviar Email. Aprobadores : "+aprobadoresEmail);
+  
+  var html = htmlTemplate.evaluate().getContent();
   GmailApp.sendEmail(destinatario, "SOLICITUD DE COMPRA", "MENSAJE DEL EMAIL", {
     htmlBody: html,
   });
@@ -333,3 +373,17 @@ function obtenerUltimosRegistros(solicitudId) {
   var filteredData = data.filter((row) => row[0] === solicitudId);
   return filteredData;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
