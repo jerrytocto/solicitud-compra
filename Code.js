@@ -216,6 +216,9 @@ function costoTotalSolicitud(solicitudId) {
 function enviarCorreoAprobado(registros, totalCompra, aprobadoresEmail, columnaEstado) {
   var destinatario;
 
+  // Decodificar el parámetro de correos electrónicos
+  aprobadoresEmail = decodeURIComponent(aprobadoresEmail);
+  
   var arrayAprobadoresEmail = [];
 
   //Convertimos el string en un array
