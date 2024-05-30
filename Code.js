@@ -1,8 +1,5 @@
 // Manejo de solicitudes de GET
 function doGet(e) {
-  console.log("ID : " + e.parameter.solicitudId);
-  console.log("ESTADO : " + e.parameter.estado);
-  console.log("APROBADOR : " + e.parameter.aprobadoresEmail);
   if (
     (e.parameter.solicitudId && e.parameter.estado, e.parameter.aprobadoresEmail)
   ) {
@@ -137,18 +134,21 @@ function actualizarEstado(solicitudId, estado, aprobadoresEmail) {
   var solicitanteEmail = null;
   var arrayAprobadoresEmail = [];
 
-     //Convertimos el string en un array
+  // Decodificar el parámetro de correos electrónicos
+  aprobadoresEmail = decodeURIComponent(aprobadoresEmail);
+
+  console.log("Aprobadores (String)"+aprobadoresEmail, "Typo: "+typeof aprobadoresEmail);
+  //Convertimos el string en un array
   if (typeof aprobadoresEmail === 'string') {
     arrayAprobadoresEmail = aprobadoresEmail.split(',');
   }
+  console.log("Aprobadores (Array): "+arrayAprobadoresEmail, "Typo: "+typeof arrayAprobadoresEmail, "Tamaño: " + arrayAprobadoresEmail.length);
 
   var columnaEstado = determinarColumnaEstado(
     totalCompra,
     arrayAprobadoresEmail
   );
-  
-  console.log("ID de solicitud: "+ solicitudId);
-  console.log("Columnas de estado(actualizarEstado): "+ columnaEstado);
+
   var registrosActualizados = [];
 
   data.forEach((row, i) => {
@@ -168,7 +168,7 @@ function actualizarEstado(solicitudId, estado, aprobadoresEmail) {
       enviarCorreoRemitente(solicitanteEmail, solicitudId, estado);
     }
     if (estado === "Aprobado") {
-      enviarCorreoAprobado(registrosActualizados, totalCompra, aprobadoresEmail, columnaEstado);
+      enviarCorreoAprobado(registrosActualizados, totalCompra, aprobadoresEmail);
     }
     return `El estado de la solicitud ha sido actualizado a: ${estado}`;
   } else {
@@ -178,9 +178,6 @@ function actualizarEstado(solicitudId, estado, aprobadoresEmail) {
 
 // Determina la columna de estado a actualizar según el total de la compra
 function determinarColumnaEstado(totalCompra, arrayAprobadoresEmail) {
-
-  console.log("Aprobadores (determinarColumnaEstado): "+arrayAprobadoresEmail);
-  console.log("Array aprobadores: "+ arrayAprobadoresEmail.length);
 
   if (totalCompra <= 500) {
     return 14; // Columna para jefe del área
@@ -213,7 +210,7 @@ function costoTotalSolicitud(solicitudId) {
 }
 
 // Enviar correo electrónico de aprobación
-function enviarCorreoAprobado(registros, totalCompra, aprobadoresEmail, columnaEstado) {
+function enviarCorreoAprobado(registros, totalCompra, aprobadoresEmail) {
   var destinatario;
 
   // Decodificar el parámetro de correos electrónicos
@@ -233,7 +230,10 @@ function enviarCorreoAprobado(registros, totalCompra, aprobadoresEmail, columnaE
     //Verificar la columna de estaddo que se ha modificado
     if (arrayAprobadoresEmail.length==1) {
       destinatario = "jerry.chuquiguanca@ahkgroup.com"; //Correo del gerente general
-      aprobadoresEmail += `,${destinatario}`;
+      arrayAprobadoresEmail.push(destinatario);
+      console.log("Aprobadores ..."+ arrayAprobadoresEmail, "Tipo: "+arrayAprobadoresEmail.length);
+      aprobadoresEmail = arrayAprobadoresEmail.join(',');
+      console.log("Apro ..."+ arrayAprobadoresEmail);
       enviarCorreoGerenteGeneral(
         registros,
         aprobadoresEmail,
@@ -244,6 +244,7 @@ function enviarCorreoAprobado(registros, totalCompra, aprobadoresEmail, columnaE
       //Correo ha sido revisado por el gerente general
     } else if (arrayAprobadoresEmail.length==2) {
       //Luego de la aprobación del gerente general se envía el correo al área de compras
+      console.log("El gerente aprobó la solicitud");
       destinatario = "jesus.arias@ahkgroup.com"; //Correo del área de compras
       enviarCorreoCompras(registros, aprobadoresEmail, destinatario, totalCompra);
     }
@@ -273,7 +274,21 @@ function enviarCorreoGerenteGeneral(
 
   //Verificación si la compra es mayor a 1000 generar el capex y añadirlo al correo
   if (totalCompra > 1000) {
-    var capex = generarCapex(totalCompra);
+
+    var capexFile = generateCapex(totalCompra, registrosAprobados, aprobadoresEmail); // Llamar a generateCapex
+    htmlTemplate.totalCompra = totalCompra.toFixed(2);
+
+    var html = htmlTemplate.evaluate().getContent();
+
+    GmailApp.sendEmail(
+      destinatario,
+      "Nueva Solicitud de Compra para Aprobar",
+      "Nueva solicitud de compra aprobada.",
+      { htmlBody: html,
+        attachments: [capexFile] 
+      }
+    );
+    
   } else {
     //Solo se envía el correo con los datos de la solicitud
     htmlTemplate.totalCompra = totalCompra.toFixed(2);
@@ -316,8 +331,6 @@ function enviarCorreoCompras(
   htmlTemplate.mostrarCampoAprobador = 1;
   htmlTemplate.paraAprobar = false;
 
-  //AQUÍ ESTÁ PENDIENTE QUE SE DEBE PASAR TAMBIÉN EL CORREO DEL GERENTE DE ÁREA
-
   htmlTemplate.totalCompra = totalCompra.toFixed(2);
 
   var html = htmlTemplate.evaluate().getContent();
@@ -354,7 +367,6 @@ function enviarEmail(totalCompra, solicitudId) {
   var aprobadoresEmail = destinatario;
   
   htmlTemplate.aprobadoresEmail = aprobadoresEmail;
-  console.log("Enviar Email. Aprobadores : "+aprobadoresEmail);
   
   var html = htmlTemplate.evaluate().getContent();
   GmailApp.sendEmail(destinatario, "SOLICITUD DE COMPRA", "MENSAJE DEL EMAIL", {
