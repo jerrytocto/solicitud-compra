@@ -27,6 +27,12 @@ function generateCapex(totalCompra, registrosAprobados, aprobadoresEmail) {
   var centroCosto = registrosAprobados[0][6];
   var prioridad = registrosAprobados[0][5];
 
+  var date = new Date();
+  var mes = date.getMonth() + 1;
+  var anio = date.getFullYear();
+
+  var nombreArchivo = `CAPEX_${registrosAprobados[0][0]}_${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}.pdf`;
+
   // Reemplazar datos generales en el documento
   var body = doc.getBody();
   body.replaceText("{{solicitante}}", solicitante);
@@ -34,6 +40,9 @@ function generateCapex(totalCompra, registrosAprobados, aprobadoresEmail) {
   body.replaceText("{{prioridad}}", prioridad);
   body.replaceText("{{totalCompra}}", totalCompra.toFixed(2));
   body.replaceText("{{aprobador}}", aprobadoresEmail);
+  body.replaceText("{{mes}}", mes);
+  body.replaceText("{{anio}}", anio);
+  body.replaceText("{{razonCompra}}", razonCompra.toUpperCase());
 
   // Crear un bloque de texto repetible
   var productosPlaceholder = "{{#productos}}";
@@ -41,17 +50,6 @@ function generateCapex(totalCompra, registrosAprobados, aprobadoresEmail) {
   var endIndex = body.getText().indexOf("{{/productos}}") + "{{/productos}}".length;
   var blockText = body.getText().substring(startIndex, endIndex);
   var productTemplate = blockText.replace(productosPlaceholder, "").replace("{{/productos}}", "");
-
-  /*
-  console.log("===============================  PRODUCTOS =============================");
-  console.log("PRODUCTO: "+ producto);
-  console.log("Equipo: "+equipo);
-  console.log("cantidad: "+ cantidad);
-  console.log("marca: "+ marca);
-  console.log("especificaciones: "+ especificaciones);
-  console.log("precio: "+ precio);
-  console.log("subtotal: "+ subtotal);
-  */
 
 
   // Crear un bloque de texto repetible
@@ -66,18 +64,17 @@ function generateCapex(totalCompra, registrosAprobados, aprobadoresEmail) {
     var precio = producto[11];
     var subtotal = producto[12];
 
-    var productEntry = + cantidad + "  " + equipo.toUpperCase()+ marca.toUpperCase() + ((i + 1 < registrosAprobados.length) ? "," : "");
+    var productEntry = + cantidad + "  " + equipo.toUpperCase() + marca.toUpperCase() + ((i + 1 < registrosAprobados.length) ? "," : "");
 
     // Formato del descripAllProductsEntry
-    var descripAllProductsEntry = "- " + cantidad + " " + equipo + " "+ marca + "  " + especificaciones + "\n" +
-      "    "  +"Unit Price: US$: " + precio + "\n" +
+    var descripAllProductsEntry = "- " + cantidad + " " + equipo + " " + marca + "  " + especificaciones + "\n" +
+      "    " + "Unit Price: US$: " + precio + "\n" +
       "    " + "Sub Total: US$: " + subtotal + "\n";
 
     // Añadir saltos de línea entre productos
     /*if (i + 1 < registrosAprobados.length) {
       descripAllProductsEntry += "\n\n";
     }*/
-
 
     productContent += productEntry;
     descripAllProducts += descripAllProductsEntry;
@@ -86,28 +83,26 @@ function generateCapex(totalCompra, registrosAprobados, aprobadoresEmail) {
   body.replaceText("{{PRODUCTOS}}", productContent);
   body.replaceText("{{DESCRIPTALLPRODUCTS}}", descripAllProducts);
 
+
+
   // Guardar cambios
   doc.saveAndClose();
 
   // Convertir el documento a PDF
   var pdf = copiaPlantilla.getAs(MimeType.PDF);
-  carpetaPdf.createFile(pdf);
 
-  return pdf;
+  // Crear el archivo PDF
+  var archivoPdf = carpetaPdf.createFile(pdf);
 
+  // Cambiar el nombre del archivo
+  archivoPdf.setName(nombreArchivo);
 
+  // Obtener el enlace del archivo PDF
+  var linkPdf = archivoPdf.getUrl();
+  console.log(" " + linkPdf)
 
+  return { pdf: archivoPdf, link: linkPdf };
 
-
-
-
-
-  console.log("==============================   GENERALIDADES   ====================================");
-  console.log("Solicitante: " + solicitante);
-  console.log("razonCompra: " + razonCompra);
-  console.log("fechaRegistro: " + fechaRegistro);
-  console.log("centroCosto: " + centroCosto);
-  console.log("prioridad: " + prioridad);
 }
 
 

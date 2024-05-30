@@ -51,8 +51,8 @@ function registrarProductos(e, solicitudId, sheetRegistro) {
     var subtotal = calcularSubtotal(producto.cantidad, producto.precio);
     totalCompra += subtotal;
   });
-  
-  console.log("Total de compra: "+ totalCompra)
+
+  console.log("Total de compra: " + totalCompra)
   productos.forEach((producto) => {
     var subtotal = calcularSubtotal(producto.cantidad, producto.precio);
 
@@ -137,12 +137,12 @@ function actualizarEstado(solicitudId, estado, aprobadoresEmail) {
   // Decodificar el parámetro de correos electrónicos
   aprobadoresEmail = decodeURIComponent(aprobadoresEmail);
 
-  console.log("Aprobadores (String)"+aprobadoresEmail, "Typo: "+typeof aprobadoresEmail);
+  console.log("Aprobadores (String)" + aprobadoresEmail, "Typo: " + typeof aprobadoresEmail);
   //Convertimos el string en un array
   if (typeof aprobadoresEmail === 'string') {
     arrayAprobadoresEmail = aprobadoresEmail.split(',');
   }
-  console.log("Aprobadores (Array): "+arrayAprobadoresEmail, "Typo: "+typeof arrayAprobadoresEmail, "Tamaño: " + arrayAprobadoresEmail.length);
+  console.log("Aprobadores (Array): " + arrayAprobadoresEmail, "Typo: " + typeof arrayAprobadoresEmail, "Tamaño: " + arrayAprobadoresEmail.length);
 
   var columnaEstado = determinarColumnaEstado(
     totalCompra,
@@ -153,9 +153,9 @@ function actualizarEstado(solicitudId, estado, aprobadoresEmail) {
 
   data.forEach((row, i) => {
     if (row[0] == solicitudId) {
-      console.log("Fila: "+ row[0]);
+      console.log("Fila: " + row[0]);
       sheet.getRange(i + 1, columnaEstado).setValue(estado);
-      sheet.getRange(i + 1, columnaEstado + 1).setValue(arrayAprobadoresEmail.length===1 ? arrayAprobadoresEmail[0]:arrayAprobadoresEmail[1]);
+      sheet.getRange(i + 1, columnaEstado + 1).setValue(arrayAprobadoresEmail.length === 1 ? arrayAprobadoresEmail[0] : arrayAprobadoresEmail[1]);
       sheet.getRange(i + 1, columnaEstado + 2).setValue(new Date());
       registrosActualizados.push(row);
       solicitanteEmail = row[2];
@@ -183,10 +183,10 @@ function determinarColumnaEstado(totalCompra, arrayAprobadoresEmail) {
     return 14; // Columna para jefe del área
   } else {
     //Este correo debe ser el mismo que se encuentra en la función enviar email para cuando el monto es > 500, Lïnea 324
-    if (arrayAprobadoresEmail.length==1) { 
+    if (arrayAprobadoresEmail.length == 1) {
       console.log("Aprobado por el gerente de área");
       return 14; // Columna del estado para el gerente de área
-    } else if (arrayAprobadoresEmail.length==2) {
+    } else if (arrayAprobadoresEmail.length == 2) {
       console.log("Aprobado por el gerente general");
       return 17; // Columna del estado para el gerente general  
     }
@@ -215,7 +215,7 @@ function enviarCorreoAprobado(registros, totalCompra, aprobadoresEmail) {
 
   // Decodificar el parámetro de correos electrónicos
   aprobadoresEmail = decodeURIComponent(aprobadoresEmail);
-  
+
   var arrayAprobadoresEmail = [];
 
   //Convertimos el string en un array
@@ -228,12 +228,12 @@ function enviarCorreoAprobado(registros, totalCompra, aprobadoresEmail) {
     enviarCorreoCompras(registros, aprobadoresEmail, destinatario, totalCompra);
   } else {
     //Verificar la columna de estaddo que se ha modificado
-    if (arrayAprobadoresEmail.length==1) {
+    if (arrayAprobadoresEmail.length == 1) {
       destinatario = "jerry.chuquiguanca@ahkgroup.com"; //Correo del gerente general
       arrayAprobadoresEmail.push(destinatario);
-      console.log("Aprobadores ..."+ arrayAprobadoresEmail, "Tipo: "+arrayAprobadoresEmail.length);
+      console.log("Aprobadores ..." + arrayAprobadoresEmail, "Tipo: " + arrayAprobadoresEmail.length);
       aprobadoresEmail = arrayAprobadoresEmail.join(',');
-      console.log("Apro ..."+ arrayAprobadoresEmail);
+      console.log("Apro ..." + arrayAprobadoresEmail);
       enviarCorreoGerenteGeneral(
         registros,
         aprobadoresEmail,
@@ -242,7 +242,7 @@ function enviarCorreoAprobado(registros, totalCompra, aprobadoresEmail) {
       );
 
       //Correo ha sido revisado por el gerente general
-    } else if (arrayAprobadoresEmail.length==2) {
+    } else if (arrayAprobadoresEmail.length == 2) {
       //Luego de la aprobación del gerente general se envía el correo al área de compras
       console.log("El gerente aprobó la solicitud");
       destinatario = "jesus.arias@ahkgroup.com"; //Correo del área de compras
@@ -275,20 +275,32 @@ function enviarCorreoGerenteGeneral(
   //Verificación si la compra es mayor a 1000 generar el capex y añadirlo al correo
   if (totalCompra > 1000) {
 
-    var capexFile = generateCapex(totalCompra, registrosAprobados, aprobadoresEmail); // Llamar a generateCapex
+    var capex = generateCapex(totalCompra, registrosAprobados, aprobadoresEmail); // Llamar a generateCapex
     htmlTemplate.totalCompra = totalCompra.toFixed(2);
 
     var html = htmlTemplate.evaluate().getContent();
 
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("index");
+    var data = sheet.getDataRange().getValues(); // Obtener todos los datos de la hoja
+
+    for (var i = 0; i < data.length; i++) {
+      if (String(data[i][0]) === String(htmlTemplate.solicitudId)) { // Si el ID de la solicitud coincide
+        var lastColumn = data[i].length + 1; // Obtener la última columna
+        sheet.getRange(i + 1, lastColumn).setValue(capex.link); // Establecer el valor de la última columna al enlace
+      }
+    }
+
+    /*
     GmailApp.sendEmail(
       destinatario,
       "Nueva Solicitud de Compra para Aprobar",
       "Nueva solicitud de compra aprobada.",
       { htmlBody: html,
-        attachments: [capexFile] 
+        attachments: [capex] 
       }
     );
-    
+    */
+
   } else {
     //Solo se envía el correo con los datos de la solicitud
     htmlTemplate.totalCompra = totalCompra.toFixed(2);
@@ -363,11 +375,11 @@ function enviarEmail(totalCompra, solicitudId) {
     totalCompra <= 500
       ? "jerry.chuquiguanca@ahkgroup.com" //Correo del jefe del área
       : "jerry.chuquiguanca@ahkgroup.com"; //Correo del gerente de área
-  
+
   var aprobadoresEmail = destinatario;
-  
+
   htmlTemplate.aprobadoresEmail = aprobadoresEmail;
-  
+
   var html = htmlTemplate.evaluate().getContent();
   GmailApp.sendEmail(destinatario, "SOLICITUD DE COMPRA", "MENSAJE DEL EMAIL", {
     htmlBody: html,
