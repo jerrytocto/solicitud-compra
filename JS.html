@@ -14,16 +14,35 @@
       var productQuantity = $('#productQuantity').val();
       var productPrice = $('#productPrice').val();
       var productSpec = $('#productSpec').val();
+      var productCentroCosto = $('#productCentroCosto').val();
   
       // Verificar si todos los campos están rellenos
-      if (productName.trim() === '' || productBrand.trim() === '' || productQuantity.trim() === '' || productPrice.trim() === '' || productSpec.trim() === '') {
+      if (productName.trim() === '' || productBrand.trim() === '' || productQuantity.trim() === '' || productPrice.trim() === '' || productSpec.trim() === ''|| productCentroCosto.trim() === '') {
         // Si algún campo está vacío, mostrar un mensaje de error y salir de la función
         alert('Por favor, complete todos los campos para agregar un producto.');
         return;
       }
+
+      // Validar que la cantidad sea mayor que 0
+      if (productQuantity <= 0) {
+        alert('La cantidad debe ser mayor que 0');
+        return;
+      }
+
+      // Validar que la cantidad sea mayor que 0
+      if (productPrice <= 0) {
+        alert('La cantidad debe ser mayor que 0');
+        return;
+      }
+
+      // Verificar si al menos uno de los inputs ocultos contiene un valor
+      if (productNames.length===0) {
+      alert('Debe agregar al menos un producto antes de enviar el formulario');
+      event.preventDefault(); // Detener el envío del formulario
+      }
   
       // Crear una nueva fila de tabla con los valores del producto
-      var newRow = '<tr><td>' + productName + '</td><td>' + productBrand + '</td><td>' + productSpec+ '</td><td>' + productQuantity + '</td><td>' + productPrice+ '</td></tr>';
+      var newRow = '<tr><td>' + productName + '</td><td>' + productBrand + '</td><td>' + productSpec+ '</td><td>' +productCentroCosto+ '</td><td>' + productQuantity + '</td><td>' + productPrice+ '</td></tr>';
   
       // Agregar la nueva fila a la tabla 
       $('#productTableBody').append(newRow);
@@ -38,6 +57,7 @@
       $('#productQuantities').val(function(i, oldVal) {
         return oldVal ? oldVal + ',' + productQuantity : productQuantity;
       });
+      
       $('#productPrices').val(function(i, oldVal) {
         return oldVal ? oldVal + ',' + productPrice : productPrice;
       });
@@ -45,6 +65,9 @@
       $('#productSpecs').val(function(i, oldVal) {
         
         return oldVal ? oldVal + '\n' + productSpec : productSpec+',';
+      });
+      $('#productCentroCostos').val(function(i, oldVal) {
+        return oldVal ? oldVal + ',' + productCentroCosto : productCentroCosto;
       });
 
   
@@ -54,6 +77,7 @@
       $('#productQuantity').val('');
       $('#productPrice').val('');
       $('#productSpec').val('');
+      $('#productCentroCosto').val('');
     });
   });
 </script>

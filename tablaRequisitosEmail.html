@@ -138,7 +138,7 @@
         <div class="card mt-4">
             <div class="card-body">
                 <h4 class="card-title text-center">Solicitud de Compra N°<span><?= solicitudId; ?></span></h4>
-                <p class="card-text">Se solicita equipo para el área de Logística debido al ingreso de nuevo personal.</p>
+                <p class="card-text"><?= justificacion; ?></p>
             </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item"><span class="font-weight-bold"><b>Solictante:</b></span> <?= emisor; ?></li>
@@ -148,7 +148,7 @@
                 <li class="list-group-item"><span class="font-weight-bold"><b>Razón de compra:</b></span><?= razonDeCompra; ?></li>
                 <li class="list-group-item">
                     <div class="row">
-                        <div class="col-sm-6"><span class="font-weight-bold"><b>Centro de Costo:</b></span><?= centroDeCosto; ?> </div>
+                        <div class="col-sm-6"><span class="font-weight-bold"><b>Centro de Costo:</b></span> <b>REVISAR</b> </div>
                         <div class="col-sm-6"><span class="font-weight-bold"><b>Fecha:</b></span><?= fechaSolicitud; ?>  </div>
                     </div>
                 </li>
@@ -161,6 +161,7 @@
                             <th scope="col">Producto</th>
                             <th scope="col">Marca</th>
                             <th scope="col">Especificaciones</th>
+                            <th scope="col"> Centro de costo </th>
                             <th scope="col">Cantidad</th>
                             <th scope="col">Precio</th>
                             <th scope="col">Subtotal</th>
@@ -171,7 +172,7 @@
                         <? for (var i = 0; i < tablaSolicitud.length; i++) { ?>
                         <tr>
                             <th scope="row"><?= (i+1); ?></th>
-                            <? for (var j = 7; j < (tablaSolicitud[i].length-6); j++) { ?>
+                            <? for (var j = 7; j < (tablaSolicitud[i].length-7); j++) { ?>
                             <td><?= tablaSolicitud[i][j]; ?></td>
                             <? } ?>
                         </tr>
@@ -180,7 +181,7 @@
                     <? if (totalCompra) { ?>
                     <tfoot>
                         <tr class="total-row">
-                            <td colspan="6" class="text-right font-weight-bold">Total de la Compra:</td>
+                            <td colspan="7" class="text-right font-weight-bold">Total de la Compra:</td>
                             <td><?= totalCompra; ?></td>
                         </tr>
                     </tfoot>

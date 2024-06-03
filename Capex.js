@@ -1,8 +1,4 @@
 function generateCapex(totalCompra, registrosAprobados, aprobadoresEmail) {
-  console.log("=================================== AQUÍ SE GENERARÁ EL CAPEX ===============================================")
-  console.log("TOTAL DE COMPRA:" + totalCompra);
-  console.log("REGISTROS APROBADOS:" + registrosAprobados);
-  console.log("APROBADORES EMAIL: " + aprobadoresEmail);
 
 
   //Identificadores de los documentos a usar (id)
@@ -24,7 +20,7 @@ function generateCapex(totalCompra, registrosAprobados, aprobadoresEmail) {
   var solicitante = registrosAprobados[0][1];
   var razonCompra = registrosAprobados[0][3];
   var fechaRegistro = registrosAprobados[0][4];
-  var centroCosto = registrosAprobados[0][6];
+  var justificacion = registrosAprobados[0][6];
   var prioridad = registrosAprobados[0][5];
 
   var date = new Date();
@@ -36,7 +32,7 @@ function generateCapex(totalCompra, registrosAprobados, aprobadoresEmail) {
   // Reemplazar datos generales en el documento
   var body = doc.getBody();
   body.replaceText("{{solicitante}}", solicitante);
-  body.replaceText("{{centroCosto}}", centroCosto);
+  body.replaceText("{{justificacion}}", justificacion);
   body.replaceText("{{prioridad}}", prioridad);
   body.replaceText("{{totalCompra}}", totalCompra.toFixed(2));
   body.replaceText("{{aprobador}}", aprobadoresEmail);
@@ -57,17 +53,18 @@ function generateCapex(totalCompra, registrosAprobados, aprobadoresEmail) {
   var descripAllProducts = "";
   for (var i = 0; i < registrosAprobados.length; i++) {
     var producto = registrosAprobados[i];
-    var cantidad = producto[10];
+    var cantidad = producto[11];
+    var centroDeCosto = producto[10];
     var equipo = producto[7];
     var marca = producto[8];
     var especificaciones = producto[9];
-    var precio = producto[11];
-    var subtotal = producto[12];
+    var precio = producto[12];
+    var subtotal = producto[13];
 
     var productEntry = + cantidad + "  " + equipo.toUpperCase() + marca.toUpperCase() + ((i + 1 < registrosAprobados.length) ? "," : "");
 
     // Formato del descripAllProductsEntry
-    var descripAllProductsEntry = "- " + cantidad + " " + equipo + " " + marca + "  " + especificaciones + "\n" +
+    var descripAllProductsEntry = centroDeCosto.toUpperCase()+ "\n"+ "- " + cantidad + " " + equipo + " " + marca + "  " + especificaciones + "\n" +
       "    " + "Unit Price: US$: " + precio + "\n" +
       "    " + "Sub Total: US$: " + subtotal + "\n";
 
@@ -99,23 +96,13 @@ function generateCapex(totalCompra, registrosAprobados, aprobadoresEmail) {
 
   // Obtener el enlace del archivo PDF
   var linkPdf = archivoPdf.getUrl();
-  console.log(" " + linkPdf)
+  console.log(" LINK DE PDF " + linkPdf);
+  console.log(" ARCHIVO PDF " + archivoPdf);
+
 
   return { pdf: archivoPdf, link: linkPdf };
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 function generCapex() {
   //Toma de datos de la fila activa
