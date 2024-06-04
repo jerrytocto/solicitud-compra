@@ -1,3 +1,8 @@
+// Incluir archivo HTML
+function include(fileName) {
+  return HtmlService.createHtmlOutputFromFile(fileName).getContent();
+}
+
 // Manejo de solicitudes de GET
 function doGet(e) {
   if (
@@ -12,7 +17,7 @@ function doGet(e) {
   return template.evaluate();
 }
 
-// Manejo de solicitudes de POST
+// MANEJO DEL FORMULARIO
 function doPost(e) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheetRegistro = ss.getSheetByName("index");
@@ -141,9 +146,10 @@ function actualizarEstado(solicitudId, estado, aprobadoresEmail) {
   aprobadoresEmail = decodeURIComponent(aprobadoresEmail);
 
   //Convertimos el string en un array
-  if (typeof aprobadoresEmail === 'string') {
-    arrayAprobadoresEmail = aprobadoresEmail.split(',');
-  }
+  arrayAprobadoresEmail = convertOfStringToArray(aprobadoresEmail);
+  //if (typeof aprobadoresEmail === 'string') {
+  //  arrayAprobadoresEmail = aprobadoresEmail.split(',');
+  //}
 
   var columnaEstado = determinarColumnaEstado(
     totalCompra,
@@ -217,17 +223,23 @@ function enviarCorreoAprobado(registros, totalCompra, aprobadoresEmail) {
   var arrayAprobadoresEmail = [];
 
   //Convertimos el string en un array
-  if (typeof aprobadoresEmail === 'string') {
-    arrayAprobadoresEmail = aprobadoresEmail.split(',');
-  }
+  arrayAprobadoresEmail = convertOfStringToArray(aprobadoresEmail);
+  //if (typeof aprobadoresEmail === 'string') {
+  //  arrayAprobadoresEmail = aprobadoresEmail.split(',');
+  //}
+
+  //Convertir en nombre al correo del aprobador
+  var nombreAprobador = convertEmailANombre(arrayAprobadoresEmail);
 
   if (totalCompra <= 500) {
-    destinatario = "jesus.arias@ahkgroup.com"; //Correo del área de compras
-    enviarCorreoCompras(registros, aprobadoresEmail, destinatario, totalCompra);
+    destinatario = "jerrytocto@gmail.com"; //Correo del área de compras
+    var nombreCargoAprobador = nombreAprobador + "- (Jefe de IT)"
+    console.log("COMPROBADOR: "+ nombreAprobador);
+    enviarCorreoCompras(registros, nombreCargoAprobador, destinatario, totalCompra);
   } else {
     //Verificar la columna de estaddo que se ha modificado
     if (arrayAprobadoresEmail.length == 1) {
-      destinatario = "juancarlos.salas@ahkgroup.com"; //Correo del gerente general
+      destinatario = "jerry.chuquiguanca@ahkgroup.com"; //Correo del gerente general
       arrayAprobadoresEmail.push(destinatario);
       aprobadoresEmail = arrayAprobadoresEmail.join(',');
       enviarCorreoGerenteGeneral(
@@ -241,8 +253,18 @@ function enviarCorreoAprobado(registros, totalCompra, aprobadoresEmail) {
     } else if (arrayAprobadoresEmail.length == 2) {
       //Luego de la aprobación del gerente general se envía el correo al área de compras
       console.log("El gerente aprobó la solicitud");
-      destinatario = "jesus.arias@ahkgroup.com"; //Correo del área de compras
-      enviarCorreoCompras(registros, aprobadoresEmail, destinatario, totalCompra);
+      destinatario = "jerrytocto@gmail.com"; //Correo del área de compras
+
+      var arrayAprobadores = convertOfStringToArray(nombreAprobador);
+      var nombreAreaGA = arrayAprobadores[0]+ "- (Gerente GAF)";
+      var nombreAreaGG = arrayAprobadores[1]+ "- (Gerente General)";
+
+      enviarCorreoCompras(
+        registros, 
+        (nombreAreaGA + ", " + nombreAreaGG), 
+        destinatario, 
+        totalCompra
+      );
     }
   }
 }
@@ -261,9 +283,19 @@ function enviarCorreoGerenteGeneral(
   htmlTemplate.razonDeCompra = registrosAprobados[0][3];
   htmlTemplate.fechaSolicitud = registrosAprobados[0][4];
   htmlTemplate.justificacion = registrosAprobados[0][6];
+  htmlTemplate.centroDeCosto = registrosAprobados[0][10];
   htmlTemplate.tablaSolicitud = registrosAprobados;
 
+  //MÉTODO PARA TRANSFORMAR EL STRING EN UN ARRAY
+  var arrayAprobadores =convertOfStringToArray(aprobadoresEmail);
+  console.log("Convirtiendo a array: "+  arrayAprobadores);
+  console.log("Tipo de aprobadores: "+ typeof arrayAprobadores);
+
+  var nombresAprobadores = convertEmailANombre([arrayAprobadores[0]]);
+
+
   htmlTemplate.aprobadoresEmail = aprobadoresEmail;
+  htmlTemplate.nombreCargoAprobador = nombresAprobadores + "- (Jefe de GAF)";
 
   htmlTemplate.mostrarCampoAprobador = 1;
   htmlTemplate.paraAprobar = true;
@@ -271,7 +303,7 @@ function enviarCorreoGerenteGeneral(
   //Verificación si la compra es mayor a 1000 generar el capex y añadirlo al correo
   if (totalCompra > 1000) {
 
-    var capex = generateCapex(totalCompra, registrosAprobados, aprobadoresEmail); // Llamar a generateCapex
+    var capex = generateCapex(totalCompra, registrosAprobados, (nombresAprobadores += "- (Jefe de GAF)")); // Llamar a generateCapex
     htmlTemplate.totalCompra = totalCompra.toFixed(2);
 
     var html = htmlTemplate.evaluate().getContent();
@@ -333,10 +365,14 @@ function enviarCorreoCompras(
   htmlTemplate.razonDeCompra = registrosAprobados[0][3];
   htmlTemplate.fechaSolicitud = registrosAprobados[0][4];
   htmlTemplate.justificacion = registrosAprobados[0][6];
+  htmlTemplate.centroDeCosto = registrosAprobados[0][10];
   htmlTemplate.tablaSolicitud = registrosAprobados;
   htmlTemplate.aprobadoresEmail = aprobadoresEmail;
   htmlTemplate.mostrarCampoAprobador = 1;
   htmlTemplate.paraAprobar = false;
+
+  console.log("Aprobador en el area de compras:"+ aprobadoresEmail);
+  htmlTemplate.nombreCargoAprobador = aprobadoresEmail;
 
   htmlTemplate.totalCompra = totalCompra.toFixed(2);
 
@@ -362,13 +398,15 @@ function enviarEmail(totalCompra, solicitudId) {
   htmlTemplate.razonDeCompra = filteredData[0][3];
   htmlTemplate.fechaSolicitud = filteredData[0][4];
   htmlTemplate.justificacion = filteredData[0][6];
+  htmlTemplate.centroDeCosto = filteredData[0][10];
   htmlTemplate.mostrarCampoAprobador = 0;
   htmlTemplate.paraAprobar = true;
+  htmlTemplate.nombreCargoAprobador = '';
 
   var destinatario =
     totalCompra <= 500
-      ? "luis.sanchez@ahkgroup.com" //Correo del jefe del área
-      : "luis.sanchez@ahkgroup.com"; //Correo del gerente de área
+      ? "jerry.chuquiguanca@ahkgroup.com" //Correo del jefe del área
+      : "jerry.chuquiguanca@ahkgroup.com"; //Correo del gerente de área
 
   var aprobadoresEmail = destinatario;
 
@@ -380,11 +418,6 @@ function enviarEmail(totalCompra, solicitudId) {
   });
 }
 
-// Incluir archivo HTML
-function include(fileName) {
-  return HtmlService.createHtmlOutputFromFile(fileName).getContent();
-}
-
 // Obtener los últimos registros de una solicitud
 function obtenerUltimosRegistros(solicitudId) {
   var libro = SpreadsheetApp.getActiveSpreadsheet();
@@ -394,3 +427,58 @@ function obtenerUltimosRegistros(solicitudId) {
   var filteredData = data.filter((row) => row[0] === solicitudId);
   return filteredData;
 }
+
+// FUNCIÓN PARA TRANSFORMAR EL NOMBRE DE UN APROBADOR
+function convertEmailANombre(aprobadoresEmail) {
+  var nombresAprobadores = '';
+  console.log("Convertir email a nombre: " + typeof aprobadoresEmail);
+  
+  for (var i = 0; i < aprobadoresEmail.length; i++) {
+    var email = aprobadoresEmail[i];
+    var partes = email.split('@')[0].split('.');
+    var nombre = partes[0];
+    var apellido = partes[1];
+
+    console.log("Nombred: "+ nombre);
+    console.log("apellido: "+ apellido);
+
+    // Capitalizar la primera letra del nombre y apellido
+    nombre = nombre.charAt(0).toUpperCase() + nombre.slice(1);
+    apellido = apellido.charAt(0).toUpperCase() + apellido.slice(1);
+
+    nombresAprobadores += nombre + ' ' + apellido;
+
+    // Añadir una coma y espacio si no es el último elemento
+    if (i < aprobadoresEmail.length - 1) {
+      nombresAprobadores += ', ';
+    }
+  }
+
+  console.log("EL APROBADOR ES: "+ nombresAprobadores);
+  
+  return nombresAprobadores;
+}
+
+//FUNCIÓN PARA CONVERTIR UN STRING A UN ARRAY
+function convertOfStringToArray(aprobadoresEmail){
+  var arrayAprobadoresEmail = [];
+
+  //Convertimos el string en un array
+  if (typeof aprobadoresEmail === 'string') {
+    arrayAprobadoresEmail = aprobadoresEmail.split(',');
+  }
+  console.log("Método de convertir un string a un array")
+  console.log("Aprobadores: " + arrayAprobadoresEmail)
+  return arrayAprobadoresEmail ;
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -143,12 +143,12 @@
             <ul class="list-group list-group-flush">
                 <li class="list-group-item"><span class="font-weight-bold"><b>Solictante:</b></span> <?= emisor; ?></li>
                 <? if(aprobadoresEmail && mostrarCampoAprobador==1){?>
-                <li class="list-group-item"><span class="font-weight-bold"><b>Aprobado Por:</b></span> <?= aprobadoresEmail; ?> </li>
+                <li class="list-group-item"><span class="font-weight-bold"><b>Aprobado Por:</b></span> <?= nombreCargoAprobador; ?> </li>
                 <?}?>
                 <li class="list-group-item"><span class="font-weight-bold"><b>Razón de compra:</b></span><?= razonDeCompra; ?></li>
                 <li class="list-group-item">
                     <div class="row">
-                        <div class="col-sm-6"><span class="font-weight-bold"><b>Centro de Costo:</b></span> <b>REVISAR</b> </div>
+                        <div class="col-sm-6"><span class="font-weight-bold"><b>Centro de Costo:</b></span> <b><?= centroDeCosto?></b> </div>
                         <div class="col-sm-6"><span class="font-weight-bold"><b>Fecha:</b></span><?= fechaSolicitud; ?>  </div>
                     </div>
                 </li>

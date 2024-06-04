@@ -22,8 +22,10 @@ function generateCapex(totalCompra, registrosAprobados, aprobadoresEmail) {
   var fechaRegistro = registrosAprobados[0][4];
   var justificacion = registrosAprobados[0][6];
   var prioridad = registrosAprobados[0][5];
+  var solicitudId = registrosAprobados[0][0];
 
   var date = new Date();
+  var dia = date.getDay();
   var mes = date.getMonth() + 1;
   var anio = date.getFullYear();
 
@@ -36,6 +38,8 @@ function generateCapex(totalCompra, registrosAprobados, aprobadoresEmail) {
   body.replaceText("{{prioridad}}", prioridad);
   body.replaceText("{{totalCompra}}", totalCompra.toFixed(2));
   body.replaceText("{{aprobador}}", aprobadoresEmail);
+  body.replaceText("{{solicitudId}}", solicitudId);
+  body.replaceText("{{dia}}", dia);
   body.replaceText("{{mes}}", mes);
   body.replaceText("{{anio}}", anio);
   body.replaceText("{{razonCompra}}", razonCompra.toUpperCase());
