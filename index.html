@@ -9,7 +9,6 @@
 
   <title>Document</title>
 
-
   <?!= include('CSS'); ?>
   <?!= include('indexCss'); ?>
 </head>
@@ -32,24 +31,22 @@
       </a>
     </div>
   </nav>
+
   <div class="main-content">
     <div class="container">
       <h3 txt="center"> Solicitud de compra</h3>
       <form method="post" action="<?= pubUrl ?>" id="formCompra" name="formCompra">
 
         <div class="form-row">
-          <div class="form-group col-md-6">
-            <label for="inputEmail4"> Soliciante *</label>
-            <input type="text" class="form-control" id="idSolicitante" name="solicitante" placeholder="Solicitante" autocomplete="off" required>
+          <div class="form-group col-md-5">
+            <label for="inputEmail4"> Solicitante *</label>
+            <input type="text" class="form-control" id="idSolicitante" name="solicitante" placeholder="Por favor, ingrese el nombre del solicitante." autocomplete="off" required>
           </div>
-          <div class="form-group col-md-6">
+          <div class="form-group col-md-5">
             <label for="inputPassword4">Email *</label>
-            <input type="email" class="form-control" id="idEmail" name="email" placeholder="Email" autocomplete="off" required>
+            <input type="email" class="form-control" id="idEmail" name="email" placeholder="Por favor, ingrese un correo electrónico válido(AHK)." autocomplete="off" required>
           </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group col-md-3">
+          <div class="form-group col-md-2">
             <label for="inputState">Razón para la compra *</label>
             <select id="inputState" class="form-control" name="razonCompra" required>
                       <option selected>Comercial</option>
@@ -58,7 +55,18 @@
                       <option>Administrativa</option>
             </select>
           </div>
-          <div class="form-group col-md-3">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-md-5">
+            <label for="productSpecs">Justificación * </label>
+            <textarea class="form-control " required placeholder="Por favor, ingrese la justificación de la compra." id="justificacion" name="justificacion" style="height: 70px"></textarea>
+          </div>
+          <div class="form-group col-md-5">
+            <label for="productSpecs">Observaciones  </label>
+            <textarea class="form-control " required placeholder="Por ejemplo: garantía de los equipos,método y tiempo de pago." id="observaciones" name="observaciones" style="height: 70px"></textarea>
+          </div>
+          <div class="form-group col-md-2">
             <label for="inputState">Prioridad *</label>
             <select id="inputState" class="form-control" name="prioridad" required>
                     <option selected>Alta</option>
@@ -66,42 +74,43 @@
                     <option>Baja</option>
                   </select>
           </div>
-          <div class="form-group col-md-6">
-            <label for="productSpecs">Justificación * </label>
-            <textarea class="form-control " required placeholder="Justificación de la compra" id="justificacion" name="justificacion" style="height: 70px"></textarea>
-          </div>
-        </div>
-        <div class="container">
-          <h5>Producto</h5>
-          <hr>
-          <div class="form-row">
-            <div class="form-group col-md-4">
-              <label for="productName">Nombre *</label>
-              <input type="text" class="form-control" id="productName" name="productName" placeholder="Nombre del producto" autocomplete="off">
-            </div>
-            <div class="form-group col-md-4">
-              <label for="productBrand">Marca *</label>
-              <input type="text" class="form-control" id="productBrand" name="productBrand" placeholder="Marca del producto"
+
+          <!--<div class="form-group">
+            <label for="fileUpload">Subir archivo *</label>
+            <input type="file" class="form-control-file" id="pdfUpload" name="pdfUpload" required>
+          </div>-->
+
+          <div class="container">
+            <h5>Producto</h5>
+            <hr>
+            <div class="form-row">
+              <div class="form-group col-md-4">
+                <label for="productName">Nombre *</label>
+                <input type="text" class="form-control" id="productName" name="productName" placeholder="Nombre del producto" autocomplete="off">
+              </div>
+              <div class="form-group col-md-4">
+                <label for="productBrand">Marca *</label>
+                <input type="text" class="form-control" id="productBrand" name="productBrand" placeholder="Marca del producto"
                           autocomplete="off"
                         >
+              </div>
+              <div class="form-group col-md-2">
+                <label for="productQuantity">Cantidad *</label>
+                <input type="number" class="form-control" id="productQuantity" name="productQuantity" placeholder="Cantidad de unidades">
+              </div>
+              <div class="form-group col-md-2">
+                <label for="productPrice">Precio Unit.(dólares) *</label>
+                <input type="number" class="form-control" id="productPrice" name="productPrice" placeholder="Precio por unidad en dólares">
+              </div>
             </div>
-            <div class="form-group col-md-2">
-              <label for="productQuantity">Cantidad *</label>
-              <input type="number" class="form-control" id="productQuantity" name="productQuantity" placeholder="Cantidad de unidades">
-            </div>
-            <div class="form-group col-md-2">
-              <label for="productPrice">Precio Unit.(dólares) *</label>
-              <input type="number" class="form-control" id="productPrice" name="productPrice" placeholder="Precio por unidad en dólares">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-floating col-md-6">
-              <label for="productSpecs">Especificaciones</label>
-              <textarea class="form-control " placeholder="Especificaciones técnicas del dispositivo" id="productSpec" name="productSpec" style="height: 70px"></textarea>
-            </div>
-            <div class="form-floating col-md-4">
-              <label for="productCentroCosto">Centro de costo *</label>
-              <select id="productCentroCosto" class="form-control" name="productCentroCosto">
+            <div class="form-row">
+              <div class="form-floating col-md-6">
+                <label for="productSpecs">Especificaciones *</label>
+                <textarea class="form-control " placeholder="Especificaciones técnicas del dispositivo" id="productSpec" name="productSpec" style="height: 70px"></textarea>
+              </div>
+              <div class="form-floating col-md-4">
+                <label for="productCentroCosto">Centro de costo *</label>
+                <select id="productCentroCosto" class="form-control" name="productCentroCosto">
                       <option selected>Seleccione</option>
                       <option>Admin General - 001</option>
                       <option>Anglo American Quellaveco - 058</option>
@@ -119,79 +128,69 @@
                       <option>Gerencia de Relaciones Comerciales - 042</option>
                       <option>Gerente GAF - 019</option>
                     </select>
-            </div>
-            <div class="form-floating col-md-2">
-              <br>
-              <button type="button" class="btn btn-primary" id="addProductBtn">Añadir Producto</button>
+              </div>
+              <div class="form-floating col-md-2">
+                <br>
+                <button type="button" class="btn btn-primary" id="addProductBtn">Añadir Producto</button>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Tabla para mostrar los productos -->
-        <table class="table mt-4">
-          <thead>
-            <tr>
-              <th>Producto</th>
-              <th>Marca</th>
-              <th>Especificaciones</th>
-              <th>Centro de Costo</th>
-              <th>Cantidad</th>
-              <th>Precio (USD)</th>
-            </tr>
-          </thead>
-          <tbody id="productTableBody">
-            <!-- Aquí se agregará dinámicamente la información de los productos -->
+          <!-- Tabla para mostrar los productos -->
+          <table class="table mt-4">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Marca</th>
+                <th>Especificaciones</th>
+                <th>Centro de Costo</th>
+                <th>Cantidad</th>
+                <th>Precio (USD)</th>
+              </tr>
+            </thead>
+            <tbody id="productTableBody">
+              <!-- Aquí se agregará dinámicamente la información de los productos -->
 
-            <!-- Se creaN inputs ocultos para recibir los productos guardados y luego enviarse cuando se haga el submit -->
-            <input type="hidden" id="productNames" name="productNames[]">
-            <input type="hidden" id="productBrands" name="productBrands[]">
-            <input type="hidden" id="productQuantities" name="productQuantities[]">
-            <input type="hidden" id="productPrices" name="productPrices[]">
-            <input type="hidden" id="productSpecs" name="productSpecs[]">
-            <input type="hidden" id="productCentroCostos" name="productCentroCostos[]">
-            <!-- Textarea oculto para almacenar las especificaciones -->
-            <!--<textarea style="display: none;" id="productSpecs" name="productSpecs[]"></textarea> -->
+              <!-- Se creaN inputs ocultos para recibir los productos guardados y luego enviarse cuando se haga el submit -->
+              <input type="hidden" id="productNames" name="productNames[]">
+              <input type="hidden" id="productBrands" name="productBrands[]">
+              <input type="hidden" id="productQuantities" name="productQuantities[]">
+              <input type="hidden" id="productPrices" name="productPrices[]">
+              <input type="hidden" id="productSpecs" name="productSpecs[]">
+              <input type="hidden" id="productCentroCostos" name="productCentroCostos[]">
+              <!-- Textarea oculto para almacenar las especificaciones -->
+              <!--<textarea style="display: none;" id="productSpecs" name="productSpecs[]"></textarea> -->
 
-          </tbody>
-        </table>
+            </tbody>
+          </table>
 
 
-        <!-- Script personalizado -->
-        <script src="logica.js"></script>
+          <!-- Script personalizado -->
+          <script src="logica.js"></script>
 
-        <div class="col text-center">
-          <button class="btn btn-success" type="submit"> Enviar </button>
+          <div class="col text-center">
+            <button class="btn btn-success" type="submit"> Enviar </button>
+          </div>
         </div>
     </div>
-  </div>
-  </form>
+    </form>
 
-  <!--FOOTER-->
-  <footer class="footer">
-    <div class="container footer-container">
-      <div class="footer-image" style="background-image: url('./img/footerOne.webp')">
-        <!-- Imagen de footer -->
+    <!--FOOTER-->
+    <footer class="footer">
+      <div class="container footer-container">
+        <div class="footer-image" style="background-image: url('./img/footerOne.webp')">
+          <!-- Imagen de footer -->
+        </div>
       </div>
-    </div>
-    <div class="container">
-      <p>&copy; 2024 ALFRED H KNIGHT. Todos los derechos reservados.</p>
-    </div>
-  </footer>
+      <div class="container">
+        <p>&copy; 2024 ALFRED H KNIGHT. Todos los derechos reservados.</p>
+      </div>
+    </footer>
   </div>
+
 
   <!-- Llamar al archivo JS -->
   <?!= include('JS'); ?>
 </body>
 
 </html>
-
-
-
-
-
-
-
-
-
-
-

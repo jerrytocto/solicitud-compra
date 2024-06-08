@@ -1,4 +1,4 @@
-function generateCapex(totalCompra, registrosAprobados, aprobadoresEmail) {
+function generateCapex(totalCompra, registrosAprobados, aprobadoresEmail, conFirma) {
 
 
   //Identificadores de los documentos a usar (id)
@@ -16,6 +16,7 @@ function generateCapex(totalCompra, registrosAprobados, aprobadoresEmail) {
   var copiaId = copiaPlantilla.getId();
   var doc = DocumentApp.openById(copiaId);
 
+  console.log("Registros en el archivo capex: "+ registrosAprobados)
   // Datos generales (asumiendo que los datos generales están en la primera fila)
   var solicitante = registrosAprobados[0][1];
   var razonCompra = registrosAprobados[0][3];
@@ -24,12 +25,13 @@ function generateCapex(totalCompra, registrosAprobados, aprobadoresEmail) {
   var prioridad = registrosAprobados[0][5];
   var solicitudId = registrosAprobados[0][0];
 
+  //Obtener fecha de creación del capex
   var date = new Date();
-  var dia = date.getDay();
+  var dia = date.getDate();
   var mes = date.getMonth() + 1;
   var anio = date.getFullYear();
 
-  var nombreArchivo = `CAPEX_${registrosAprobados[0][0]}_${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}.pdf`;
+  
 
   // Reemplazar datos generales en el documento
   var body = doc.getBody();
@@ -37,12 +39,21 @@ function generateCapex(totalCompra, registrosAprobados, aprobadoresEmail) {
   body.replaceText("{{justificacion}}", justificacion);
   body.replaceText("{{prioridad}}", prioridad);
   body.replaceText("{{totalCompra}}", totalCompra.toFixed(2));
-  body.replaceText("{{aprobador}}", aprobadoresEmail);
+  body.replaceText("{{aprobador}}", aprobadoresEmail[0]);
   body.replaceText("{{solicitudId}}", solicitudId);
   body.replaceText("{{dia}}", dia);
   body.replaceText("{{mes}}", mes);
   body.replaceText("{{anio}}", anio);
   body.replaceText("{{razonCompra}}", razonCompra.toUpperCase());
+
+  if (conFirma) {
+    console.log("Se tiene que firmar")
+    body.replaceText("{{gerenteGeneral}}", aprobadoresEmail[1]);
+    body.replaceText("{{date}}", date);
+    var nombreArchivo = `CAPEX_FIRM_${solicitudId}_${dia}-${mes}-${anio}.pdf`;
+  } else{
+    var nombreArchivo = `CAPEX_${solicitudId}_${dia}-${mes}-${anio}.pdf`;
+  }
 
   // Crear un bloque de texto repetible
   var productosPlaceholder = "{{#productos}}";
@@ -68,7 +79,7 @@ function generateCapex(totalCompra, registrosAprobados, aprobadoresEmail) {
     var productEntry = + cantidad + "  " + equipo.toUpperCase() + marca.toUpperCase() + ((i + 1 < registrosAprobados.length) ? "," : "");
 
     // Formato del descripAllProductsEntry
-    var descripAllProductsEntry = centroDeCosto.toUpperCase()+ "\n"+ "- " + cantidad + " " + equipo + " " + marca + "  " + especificaciones + "\n" +
+    var descripAllProductsEntry = centroDeCosto.toUpperCase() + "\n" + "- " + cantidad + " " + equipo + " " + marca + "  " + especificaciones + "\n" +
       "    " + "Unit Price: US$: " + precio + "\n" +
       "    " + "Sub Total: US$: " + subtotal + "\n";
 
@@ -100,14 +111,13 @@ function generateCapex(totalCompra, registrosAprobados, aprobadoresEmail) {
 
   // Obtener el enlace del archivo PDF
   var linkPdf = archivoPdf.getUrl();
-  console.log(" LINK DE PDF " + linkPdf);
-  console.log(" ARCHIVO PDF " + archivoPdf);
 
 
   return { pdf: archivoPdf, link: linkPdf };
 
 }
 
+/*
 function generCapex() {
   //Toma de datos de la fila activa
   var colNames = 2;
@@ -169,6 +179,7 @@ function generCapex() {
   doc.getBody().replaceText("{{names}}", names);
   doc.getBody().replaceText("{{subtotal}}", subtotal);
 }
+*/
 
 
 
