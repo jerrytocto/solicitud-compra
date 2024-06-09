@@ -24,6 +24,7 @@ function generateCapex(totalCompra, registrosAprobados, aprobadoresEmail, conFir
   var justificacion = registrosAprobados[0][6];
   var prioridad = registrosAprobados[0][5];
   var solicitudId = registrosAprobados[0][0];
+  var observaciones = registrosAprobados[0][14];
 
   //Obtener fecha de creación del capex
   var date = new Date();
@@ -45,6 +46,7 @@ function generateCapex(totalCompra, registrosAprobados, aprobadoresEmail, conFir
   body.replaceText("{{mes}}", mes);
   body.replaceText("{{anio}}", anio);
   body.replaceText("{{razonCompra}}", razonCompra.toUpperCase());
+  body.replaceText("{{observaciones}}", observaciones);
 
   if (conFirma) {
     console.log("Se tiene que firmar")
@@ -116,71 +118,6 @@ function generateCapex(totalCompra, registrosAprobados, aprobadoresEmail, conFir
   return { pdf: archivoPdf, link: linkPdf };
 
 }
-
-/*
-function generCapex() {
-  //Toma de datos de la fila activa
-  var colNames = 2;
-  var colEmail = 3;
-  var colrCompra = 4;
-  var colFechaRegistro = 5;
-  var colPrioridad = 6;
-  var colCentroCosto = 7;
-  var colEquipos = 8;
-  var colMarca = 9;
-  var colEspeficaciones = 10;
-  var colCantidad = 11;
-  var colPrecio = 12;
-  var colSubTotal = 13;
-  var colAprobadoPor = 14;
-  var colFechaAprobacion = 15;
-
-  //Identificaciones 
-  var capexPlantillaId = "1f4gccifvzDY23aWDhEaeEHSNzEEgW-vjdVIQE00HsPk";
-  var pdfId = "1T_vTy4BVj3ypQbes5jMm4yWYOaWmacF3";
-  var tempId = "1PN_mQmT_RoOZJCRwhPd0xr8zkeNrNeIP";
-
-  //Para poder realizar cambios en google docs
-  var document = DocumentApp.openById(capexPlantillaId);
-  var capexPlantilla = DriveApp.getFileById(capexPlantillaId);
-  var carpetaPdf = DriveApp.getFolderById(pdfId);
-  var carpetaTemp = DriveApp.getFolderById(tempId);
-  var hoja = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("idex");
-
-  //Variables para el documento 
-  var filaActiva = hoja.getActiveRange().getRow();
-  var names = hoja.getRange(filaActiva, colNames).getValue();
-  var email = hoja.getRange(filaActiva, colEmail);
-  var rCompra = hoja.getRange(filaActiva, colrCompra);
-  var fechaRegistro = hoja.getRange(filaActiva, colFechaRegistro);
-  var prioridad = hoja.getRange(filaActiva, colPrioridad);
-  var centroCosto = hoja.getRange(filaActiva, colCentroCosto);
-  var equipos = hoja.getRange(filaActiva, colEquipos).getValue();
-  var marca = hoja.getRange(filaActiva, colMarca);
-  var especificaciones = hoja.getRange(filaActiva, colEspeficaciones).getValue();
-  var cantidad = hoja.getRange(filaActiva, colCantidad).getValue();
-  var precio = hoja.getRange(filaActiva, colPrecio).getValue();
-  var subtotal = hoja.getRange(filaActiva, colSubTotal).getValue();
-  var aprobador = hoja.getRange(filaActiva, colAprobadoPor).getValue();
-  var fechaAprobacion = hoja.getRange(filaActiva, colFechaAprobacion);
-
-  //
-  var copiaPlantilla = capexPlantilla.makeCopy(carpetaTemp);
-  var copiaId = copiaPlantilla.getId();
-  var doc = DocumentApp.openById(copiaId);
-
-  //Reemplazar variables
-  doc.getBody().replaceText("{{names}}", names);
-  doc.getBody().replaceText("{{cantidad}}", cantidad);
-  doc.getBody().replaceText("{{equipos}}", equipos);
-  doc.getBody().replaceText("{{especificaciones}}", especificaciones);
-  doc.getBody().replaceText("{{aprobador}}", aprobador);
-  doc.getBody().replaceText("{{precio}}", precio);
-  doc.getBody().replaceText("{{names}}", names);
-  doc.getBody().replaceText("{{subtotal}}", subtotal);
-}
-*/
-
 
 
 
