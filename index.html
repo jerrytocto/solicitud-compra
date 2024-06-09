@@ -48,7 +48,7 @@
           </div>
           <div class="form-group col-md-2">
             <label for="inputState">Razón para la compra *</label>
-            <select id="inputState" class="form-control" name="razonCompra" required>
+            <select id="razonCompra" class="form-control" name="razonCompra" required>
                       <option selected>Comercial</option>
                       <option>Operacional</option>
                       <option>Ssoma</option>
@@ -110,24 +110,9 @@
               </div>
               <div class="form-floating col-md-4">
                 <label for="productCentroCosto">Centro de costo *</label>
-                <select id="productCentroCosto" class="form-control" name="productCentroCosto">
-                      <option selected>Seleccione</option>
-                      <option>Admin General - 001</option>
-                      <option>Anglo American Quellaveco - 058</option>
-                      <option>Atención al Cliente - 055</option>
-                      <option>Callao - 003</option>
-                      <option>Matarani Cerro Verde - 016</option>
-                      <option>Control RFX - 049</option>
-                      <option>Control RFX Matarani - 053</option>
-                      <option>Gerencia Commercial - 012</option>
-                      <option>Gerencia de Proyecto - 043</option>
-                      <option>Gerencia GAF - 010</option>
-                      <option>Gerencia RRHH - 041</option>
-                      <option>Gerente C.RFX - 050</option>
-                      <option>Gerente C.RFX Matarani- 053</option>
-                      <option>Gerencia de Relaciones Comerciales - 042</option>
-                      <option>Gerente GAF - 019</option>
-                    </select>
+                <select id="productCentroCosto" class="form-control" name="productCentroCosto" >
+                  <option selected>Seleccione</option>
+                </select>
               </div>
               <div class="form-floating col-md-2">
                 <br>
@@ -166,7 +151,7 @@
 
 
           <!-- Script personalizado -->
-          <script src="logica.js"></script>
+          <script src="logicaCentroCosto.js"></script>
 
           <div class="col text-center">
             <button class="btn btn-success" type="submit"> Enviar </button>
@@ -189,8 +174,10 @@
   </div>
 
 
+
   <!-- Llamar al archivo JS -->
   <?!= include('JS'); ?>
+  <?!= include('logicaCentroCosto'); ?>
 </body>
 
 </html>

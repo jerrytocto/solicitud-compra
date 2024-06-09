@@ -1,0 +1,57 @@
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+  const razonCompraSelect = document.getElementById('razonCompra');
+  const centroCostoSelect = document.getElementById('productCentroCosto');
+
+  const centrosDeCosto = {
+    Comercial: [
+      'Admin General - 001',
+      'Atención al Cliente - 055',
+      'Gerencia Commercial - 012',
+      'Gerencia de Relaciones Comerciales - 042',
+    ],
+    Operacional: [
+      'Anglo American Quellaveco - 058',
+      'Callao - 003',
+      'Matarani Cerro Verde - 016',
+      'Control RFX - 049',
+    ],
+    Ssoma: [
+      'Gerencia de Proyecto - 043',
+      'Gerencia RRHH - 041',
+      'Gerente C.RFX - 050',
+    ],
+    Administrativa: [
+      'Admin General - 001',
+      'Gerencia GAF - 010',
+      'Gerente GAF - 019',
+    ],
+  };
+
+  function updateCentroCostoOptions(selectedRazon) {
+    // Limpiar las opciones actuales
+    centroCostoSelect.innerHTML = '<option selected>Seleccione</option>';
+
+    // Obtener las nuevas opciones basadas en la razón de compra seleccionada
+    const opciones = centrosDeCosto[selectedRazon] || [];
+
+    // Crear y agregar las nuevas opciones
+    opciones.forEach(function(opcion) {
+      const optionElement = document.createElement('option');
+      optionElement.value = opcion;
+      optionElement.textContent = opcion;
+      centroCostoSelect.appendChild(optionElement);
+    });
+  }
+
+  // Manejar el cambio en el select de razón de compra
+  razonCompraSelect.addEventListener('change', function() {
+    const selectedRazon = razonCompraSelect.value;
+    updateCentroCostoOptions(selectedRazon);
+  });
+
+  // Inicializar el select de centro de costo con la razón de compra por defecto
+  updateCentroCostoOptions(razonCompraSelect.value);
+});
+
+</script>
